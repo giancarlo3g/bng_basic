@@ -1,0 +1,88 @@
+#Authentication based on MAC address
+
+# 02:42:ac:11:01:01   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub1-ONT1",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# 02:42:ac:11:01:02   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub1-ONT1",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-voice"
+
+# 02:42:ac:11:01:03   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub1-ONT1",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-video"
+
+# 02:42:ac:11:01:04   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub4-ONT1-ESMoPW",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-video"
+
+
+# 02:42:ac:11:02:01   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub2-ONT2",
+#                     Alc-Subsc-Prof-Str = "sub-prof-100M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# 02:42:ac:11:02:02   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub5-ONT2-ESMoPW",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# 02:42:ac:11:03:01   Auth-Type := Accept
+#                     Alc-Subsc-ID-Str = "sub3-ONT3",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# Any host is allowed with sub-id SAP-ID
+
+# DEFAULT             Auth-Type := Accept
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# Based on Remote-ID and specific VLAN tag
+# MSAP for Capture SAP (automatic VLAN)
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", NAS-Port-Id =~ ":2000.2011$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-internet",
+                    Alc-MSAP-Serv-Name = "residential",
+                    Alc-MSAP-Interface = "toOLT1-Internet",
+                    Alc-MSAP-Policy = "msap-policy-1"
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", NAS-Port-Id =~ ":2000.2012$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-voice",
+                    Alc-MSAP-Serv-Name = "residential",
+                    Alc-MSAP-Interface = "toOLT1-Voice",
+                    Alc-MSAP-Policy = "msap-policy-1"
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", NAS-Port-Id =~ ":2000.2013$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-video",
+                    Alc-MSAP-Serv-Name = "residential",
+                    Alc-MSAP-Interface = "toOLT1-Video",
+                    Alc-MSAP-Policy = "msap-policy-1"
+
+
+# Based on VLAN tag
+# DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":200$"
+#                     Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-internet"
+
+# DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":201$"
+#                     Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-video"
+
+# DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":202$"
+#                     Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+#                     Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                     Alc-SLA-Prof-Str = "sla-prof-voice"
+

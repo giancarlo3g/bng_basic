@@ -1,0 +1,39 @@
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 987654321, NAS-Port-Id =~ ":2000.200$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-hsi"
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":200$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-hsi"
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":201$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-video"
+
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == 123456789, NAS-Port-Id =~ ":202$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-voice"
+
+#50:00:00:11:00:00  Auth-Type := Accept
+#                   Alc-Subsc-ID-Str = "ONT-Remote-1",
+#                   Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                   Alc-SLA-Prof-Str = "sla-prof-hsi"
+
+#50:00:00:0a:00:00  Auth-Type := Accept
+#                   Alc-Subsc-ID-Str = "ONT-Remote-1",
+#                   Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                   Alc-SLA-Prof-Str = "sla-prof-video"
+
+#50:00:00:0b:00:00  Auth-Type := Accept
+#                   Alc-Subsc-ID-Str = "ONT-Remote-1",
+#                   Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                   Alc-SLA-Prof-Str = "sla-prof-voip"
+
+#50:00:00:0e:00:00  Auth-Type := Accept
+#                   Alc-Subsc-ID-Str = "ONT-Remote-1",
+#                   Alc-Subsc-Prof-Str = "sub-prof-500M",
+#                   Alc-SLA-Prof-Str = "sla-prof-hsi"

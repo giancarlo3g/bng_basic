@@ -1,0 +1,135 @@
+name: bng
+prefix: ""
+
+topology:
+  defaults:
+    kind: nokia_sros
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux:24.10.1
+      # license is required to run IXR-DNX and 7730 on Containerlab
+      license: ../license-srl24.10.txt
+    nokia_sros:
+      image: registry.srlinux.dev/pub/nokia_sros:24.10.R1 
+      license: ../license-sros24.txt
+    linux:
+      image: ghcr.io/mfzhsn/network-multitool-sshd:0.0.2
+  nodes: 
+    bng1: # SR-2s
+      kind: nokia_sros
+      type: >-
+        cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
+        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28 ___ 
+        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28
+      startup-config: ./config/bng1.cfg
+      ports:
+        - 50101:22
+    bng2: # SR-2s
+      kind: nokia_sros
+      type: >-
+        cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
+        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28 ___ 
+        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28
+      startup-config: ./config/bng2.cfg
+      ports:
+        - 50201:22
+    agg1: # IXR-X1
+      kind: nokia_sros
+      type: >-
+          cp: cpu=2 ram=3 slot=A chassis=IXR-X card=imm32-qsfp28+4-qsfpdd ___ 
+          lc: cpu=2 ram=4 max_nics=36 slot=1 chassis=IXR-X card=imm32-qsfp28+4-qsfpdd mda/1=m32-qsfp28+4-qsfpdd
+      startup-config: ./config/agg1.cfg
+      ports:
+        - 50301:22
+        - 50302:57400
+        - 50303:830
+    olt1: # SR-1
+      kind: nokia_sros
+      type: sr-1
+      startup-config: ./config/olt1.cfg
+      ports:
+        - 50401:22
+    ont1: # IXR-D2L
+      kind: nokia_srlinux
+      type: ixrd2l
+      startup-config: ./config/ont1.json
+      ports:
+        - 50501:22
+    host1-internet:
+      kind: linux
+      image: ghcr.io/giancarlo3g/host-alpine:latest
+      exec:
+        - ip route delete default
+        - ifconfig eth1 hw ether 02:42:ac:11:01:01
+        - echo "ping to server"
+        - ping 100.1.2.2
+    host1-voice:
+      kind: linux
+      image: ghcr.io/giancarlo3g/host-alpine:latest
+      exec:
+        - ip route delete default
+        - ifconfig eth1 hw ether 02:42:ac:11:01:02
+        - echo "ping to server"
+        - ping 100.1.2.2
+    host1-video:
+      kind: linux
+      image: ghcr.io/giancarlo3g/host-alpine:latest
+      exec:
+        - ip route delete default
+        - ifconfig eth1 hw ether 02:42:ac:11:01:03
+        - echo "ping to server"
+        - ping 100.1.2.2
+    switch: # IXR-D2L
+      kind: nokia_srlinux
+      type: ixrd2l
+      startup-config: ./config/switch.json
+      ports:
+        - 51801:22
+    radius:
+      kind: linux
+      image: freeradius/freeradius-server:latest-alpine
+      binds:
+        - radius/raddb/clients.conf:/etc/raddb/clients.conf
+        - radius/raddb/dictionary:/etc/raddb/dictionary
+        - radius/raddb/mods-config/files/authorize:/etc/raddb/mods-config/files/authorize
+      exec:
+        - sed -i 's/^[[:space:]]*auth = .*/        auth = yes/' /etc/raddb/radiusd.conf
+        - /opt/sbin/radiusd -f
+        - ifconfig eth1 172.16.101.2
+        - ifconfig eth1 netmask 255.255.255.0
+    dhcp:
+      kind: linux
+      image: docker.cloudsmith.io/isc/docker/kea-dhcp4:2.7.5   # https://gitlab.isc.org/isc-projects/kea-docker   https://kea.readthedocs.io/en/latest/arm/config.html
+      binds:
+        - dhcp/config:/etc/kea
+        - dhcp/leases:/var/lib/kea
+        - dhcp/supervisor:/etc/supervisor/conf.d
+      exec:
+        - ifconfig eth1 172.16.100.2
+        - ifconfig eth1 netmask 255.255.255.0
+        - ip route add 172.16.20.0/24 via 172.16.100.1
+      cmd: sh -c "echo 'waiting for 60 seconds' && sleep 60 && kea-dhcp4 -c /etc/kea/kea-dhcp4.conf"
+    internet:
+      kind: linux
+      ports:
+        - 51901:22
+      exec:
+        - ifconfig eth1 100.1.2.2
+        - ifconfig eth1 netmask 255.255.255.0
+        - ip route replace default via 100.1.2.1 dev eth1
+
+  links:
+    - endpoints: ["bng1:eth2", "bng2:eth2"]
+    - endpoints: ["bng1:eth3", "agg1:eth1"]
+    - endpoints: ["bng2:eth3", "agg1:eth2"]
+    - endpoints: ["agg1:eth3", "olt1:eth1"]
+    - endpoints: ["olt1:eth2", "ont1:e1-1"]
+    - endpoints: ["ont1:e1-3", "host1-internet:eth1"]
+    - endpoints: ["ont1:e1-4", "host1-voice:eth1"]
+    - endpoints: ["ont1:e1-5", "host1-video:eth1"]
+    - endpoints: ["bng1:eth4", "switch:e1-1"]
+    - endpoints: ["bng2:eth4", "switch:e1-2"]
+    - endpoints: ["radius:eth1", "switch:e1-3"]
+    - endpoints: ["dhcp:eth1", "switch:e1-4"]
+    - endpoints: ["internet:eth1", "switch:e1-5"]
+    

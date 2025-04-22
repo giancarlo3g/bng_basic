@@ -19,8 +19,8 @@ topology:
       kind: nokia_sros
       type: >-
         cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
-        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28 ___ 
-        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28
+        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28 ___ 
+        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28
       startup-config: ./config/bng1.cfg
       ports:
         - 50101:22
@@ -28,8 +28,8 @@ topology:
       kind: nokia_sros
       type: >-
         cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
-        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28 ___ 
-        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s18-100gb-qsfp28
+        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28 ___ 
+        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28
       startup-config: ./config/bng2.cfg
       ports:
         - 50201:22
@@ -127,8 +127,8 @@ topology:
     - endpoints: ["ont1:e1-3", "host1-internet:eth1"]
     - endpoints: ["ont1:e1-4", "host1-voice:eth1"]
     - endpoints: ["ont1:e1-5", "host1-video:eth1"]
-    - endpoints: ["bng1:eth4", "switch:e1-1"]
-    - endpoints: ["bng2:eth4", "switch:e1-2"]
+    - endpoints: ["bng1:eth7", "switch:e1-1"]
+    - endpoints: ["bng2:eth7", "switch:e1-2"]
     - endpoints: ["radius:eth1", "switch:e1-3"]
     - endpoints: ["dhcp:eth1", "switch:e1-4"]
     - endpoints: ["internet:eth1", "switch:e1-5"]

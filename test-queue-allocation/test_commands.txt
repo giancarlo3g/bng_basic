@@ -1,0 +1,10 @@
+/environment more false
+/show service active-subscribers hierarchy
+/tools dump resource-usage system all | match 'Resource Usage Infor'
+/tools dump resource-usage card all | match 'Egress Queues|Ingress Queues'
+/show pools "1/1/c2/1" access-ingress | match 'Queue : '
+/show pools "1/1/c3/1" access-ingress | match 'Queue : '
+/show pools "1/1/c4/1" access-ingress | match 'Queue : '
+/show pools slot-number 1 fp 1 network-ingress | match 'Queue : ' | count
+/show pools slot-number 2 fp 1 network-ingress | match 'Queue : ' | count
+/environment more true

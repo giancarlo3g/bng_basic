@@ -55,8 +55,8 @@ DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", N
 
 DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_654321", NAS-Port-Id =~ ":2000.2011$"
                     Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
-                    Alc-Subsc-Prof-Str = "sub-prof-500M",
-                    Alc-SLA-Prof-Str = "sla-prof-internet",
+                    Alc-Subsc-Prof-Str = "BNG_HSI_Sub_Profile",
+                    Alc-SLA-Prof-Str = "UpTo1Gbps",
                     Alc-MSAP-Serv-Name = "residential",
                     Alc-MSAP-Interface = "toOLT1-Internet",
                     Alc-MSAP-Policy = "msap-policy-1"

@@ -55,6 +55,12 @@ topology:
       startup-config: ./config/ont1.json
       ports:
         - 50501:22
+    ont2: # IXR-D2L
+      kind: nokia_srlinux
+      type: ixrd2l
+      startup-config: ./config/ont2.json
+      ports:
+        - 50601:22
     host1-internet:
       kind: linux
       image: ghcr.io/giancarlo3g/host-alpine:latest
@@ -77,6 +83,14 @@ topology:
       exec:
         - ip route delete default
         - ifconfig eth1 hw ether 02:42:ac:11:01:03
+        - echo "ping to server"
+        - ping 100.1.2.2
+    host2-internet:
+      kind: linux
+      image: ghcr.io/giancarlo3g/host-alpine:latest
+      exec:
+        - ip route delete default
+        - ifconfig eth1 hw ether 02:42:ac:11:02:01
         - echo "ping to server"
         - ping 100.1.2.2
     switch: # IXR-D2L
@@ -124,9 +138,11 @@ topology:
     - endpoints: ["bng2:eth3", "agg1:eth2"]
     - endpoints: ["agg1:eth3", "olt1:eth1"]
     - endpoints: ["olt1:eth2", "ont1:e1-1"]
+    - endpoints: ["olt1:eth3", "ont2:e1-1"]
     - endpoints: ["ont1:e1-3", "host1-internet:eth1"]
     - endpoints: ["ont1:e1-4", "host1-voice:eth1"]
     - endpoints: ["ont1:e1-5", "host1-video:eth1"]
+    - endpoints: ["ont2:e1-3", "host2-internet:eth1"]
     - endpoints: ["bng1:eth7", "switch:e1-1"]
     - endpoints: ["bng2:eth7", "switch:e1-2"]
     - endpoints: ["radius:eth1", "switch:e1-3"]

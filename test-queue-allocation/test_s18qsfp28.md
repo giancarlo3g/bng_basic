@@ -88,7 +88,6 @@ A:admin@bng1# tools dump resource-usage card all | match 'Egress Queues|Ingress 
                                Egress Queues |     131072         55     131017
                               Ingress Queues |     131072        859     130213
                                Egress Queues |     131072         31     131041
-
 ```
 
 ```js
@@ -192,7 +191,7 @@ Queue : 3000->1/1/c4/1:3002->1
 Queue : 3000->1/1/c4/1:3003->1
 ```
 
-```
+```js
 A:admin@bng1# /show pools slot-number 1 fp 1 network-ingress | match 'Queue : ' | count
 Count: 72 lines
 ```

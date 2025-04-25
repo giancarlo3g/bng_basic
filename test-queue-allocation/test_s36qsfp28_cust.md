@@ -374,6 +374,12 @@ Active Subscribers Hierarchy
 -- ONT_123456
    (sub-prof-500M)
    |
+   |-- sap:[lag-100:2000.2011] - sla:sla-prof-internet
+   |   |
+   |   +-- IPOE-session - mac:02:42:ac:11:01:01 - svc:3000
+   |       |
+   |       +-- 172.16.10.10 - DHCP
+   |
    |-- sap:[lag-100:2000.2012] - sla:sla-prof-voice
    |   |
    |   +-- IPOE-session - mac:02:42:ac:11:01:02 - svc:3000
@@ -393,7 +399,7 @@ Active Subscribers Hierarchy
        |
        +-- IPOE-session - mac:02:42:ac:11:02:01 - svc:3000
            |
-           +-- 172.16.10.10 - DHCP
+           +-- 172.16.10.11 - DHCP
 
 -------------------------------------------------------------------------------
 Number of active subscribers : 2
@@ -416,8 +422,8 @@ Resource Usage Information for Card Slot #2 MDA #1
 
 ```js
 A:admin@bng1# /tools dump resource-usage card all | match 'Egress Queues|Ingress Queues'
-                              Ingress Queues |     131072        959     130113
-                               Egress Queues |     131072         59     131013
+                              Ingress Queues |     131072        960     130112
+                               Egress Queues |     131072         60     131012
                               Ingress Queues |     131072        755     130317
                                Egress Queues |     131072         31     131041
                               Ingress Queues |     131072        859     130213
@@ -432,22 +438,23 @@ A:admin@bng1# /show pools "1/1/c2/1" access-ingress | match 'Queue : '
 
 ```js
 A:admin@bng1# /show pools "1/1/c3/1" access-ingress | match 'Queue : '
-Queue : 3000->lag-100:2000.4092(1/1/c3/1)->1
 Queue : 3000->lag-100:2000.4093(1/1/c3/1)->1
+Queue : 3000->lag-100:2000.4092(1/1/c3/1)->1
 Queue : 3000->lag-100:2000.4094(1/1/c3/1)->1
-Queue : 3000->lag-100:2000.2011(1/1/c3/1)->1
-Queue : Sub=ONT_654321:UpTo1Gbps 3000->lag-100:2000.2011(1/1/c3/1)->1
 Queue : 3000->lag-100:2000.2012(1/1/c3/1)->1
 Queue : Sub=ONT_123456:sla-prof-voice 3000->lag-100:2000.2012(1/1/c3/1)->1
+Queue : 3000->lag-100:2000.2011(1/1/c3/1)->1
+Queue : Sub=ONT_123456:sla-prof-internet 3000->lag-100:2000.2011(1/1/c3/1)->1
 Queue : 3000->lag-100:2000.2013(1/1/c3/1)->1
 Queue : Sub=ONT_123456:sla-prof-video 3000->lag-100:2000.2013(1/1/c3/1)->1
+Queue : Sub=ONT_654321:UpTo1Gbps 3000->lag-100:2000.2011(1/1/c3/1)->1
 ```
 
 ```js
 A:admin@bng1# /show pools "1/1/c7/1" access-ingress | match 'Queue : '
+Queue : 3000->1/1/c7/1:3003->1
 Queue : 3000->1/1/c7/1:3001->1
 Queue : 3000->1/1/c7/1:3002->1
-Queue : 3000->1/1/c7/1:3003->1
 ```
 
 ```js

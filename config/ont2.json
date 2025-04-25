@@ -3235,7 +3235,7 @@
     },
     {
       "name": "ethernet-1/3",
-      "admin-state": "disable",
+      "admin-state": "enable",
       "subinterface": [
         {
           "index": 0,

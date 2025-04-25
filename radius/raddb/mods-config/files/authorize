@@ -53,6 +53,14 @@ DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", N
                     Alc-MSAP-Interface = "toOLT1-Internet",
                     Alc-MSAP-Policy = "msap-policy-1"
 
+DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_654321", NAS-Port-Id =~ ":2000.2011$"
+                    Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
+                    Alc-Subsc-Prof-Str = "sub-prof-500M",
+                    Alc-SLA-Prof-Str = "sla-prof-internet",
+                    Alc-MSAP-Serv-Name = "residential",
+                    Alc-MSAP-Interface = "toOLT1-Internet",
+                    Alc-MSAP-Policy = "msap-policy-1"
+
 DEFAULT             Auth-Type := Accept, ADSL-Agent-Remote-Id == "ONT_123456", NAS-Port-Id =~ ":2000.2012$"
                     Alc-Subsc-ID-Str = "%{string:ADSL-Agent-Remote-Id}",
                     Alc-Subsc-Prof-Str = "sub-prof-500M",

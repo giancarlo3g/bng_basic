@@ -55,6 +55,12 @@ topology:
       startup-config: ./config/ont1.json
       ports:
         - 50501:22
+    ont2: # IXR-D2L
+      kind: nokia_srlinux
+      type: ixrd2l
+      startup-config: ./config/ont2.json
+      ports:
+        - 50901:22
     host1-internet:
       kind: linux
       image: ghcr.io/giancarlo3g/host-alpine:latest
@@ -77,6 +83,14 @@ topology:
       exec:
         - ip route delete default
         - ifconfig eth1 hw ether 02:42:ac:11:01:03
+        - echo "ping to server"
+        - ping 100.1.2.2
+    host2-internet:
+      kind: linux
+      image: ghcr.io/giancarlo3g/host-alpine:latest
+      exec:
+        - ip route delete default
+        - ifconfig eth1 hw ether 02:42:ac:11:01:01
         - echo "ping to server"
         - ping 100.1.2.2
     switch: # IXR-D2L

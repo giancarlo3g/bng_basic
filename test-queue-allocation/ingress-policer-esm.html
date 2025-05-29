@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ingress-policer-esm.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file:///Users/giancarlo3g/OneDrive%20-%20Nokia/Documentos/markdown-pdf-styles" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<p>Policer configuration</p>
+<pre class="hljs"><code><div>/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; description &quot;BNG SAP-Ingress QoS Policy for HSI subscriber MSAPs - Policer&quot;
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; policy-id 213
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; policer 62 arbiter-parent arbiter-name &quot;root&quot;
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; policer 62 rate pir 100000
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;af&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;be&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;ef&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;h1&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;h2&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;l1&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;l2&quot; policer 62
+/configure qos sap-ingress &quot;BNG_Subscriber_HSI_Policer&quot; fc &quot;nc&quot; policer 62
+</div></code></pre>
+<p>SLA- and Sub- profiles</p>
+<pre class="hljs"><code><div>/configure subscriber-mgmt sub-profile &quot;BNG_HSI_Sub_Profile&quot; sla-profile-map entry &quot;1024kbps-down&quot; sla-profile &quot;1024kbps-down&quot;
+/configure subscriber-mgmt sub-profile &quot;BNG_HSI_Sub_Profile&quot; sla-profile-map entry &quot;UpTo1Gbps&quot; sla-profile &quot;UpTo1Gbps&quot;
+/configure subscriber-mgmt sla-profile &quot;1024kbps-down&quot; description &quot;1 Mbps SLA-Profile for BNG HSI subscribers&quot;
+/configure subscriber-mgmt sla-profile &quot;1024kbps-down&quot; egress qos sap-egress policy-name &quot;BNG_Subscriber_HSI&quot;
+/configure subscriber-mgmt sla-profile &quot;1024kbps-down&quot; egress qos sap-egress overrides queue 1 rate pir 1024
+/configure subscriber-mgmt sla-profile &quot;1024kbps-down&quot; ingress qos sap-ingress policy-name &quot;BNG_Subscriber_HSI_Policer&quot;
+/configure subscriber-mgmt sla-profile &quot;UpTo1Gbps&quot; description &quot;Up-to-1Gbps SLA-Profile for BNG HSI subscribers&quot;
+/configure subscriber-mgmt sla-profile &quot;UpTo1Gbps&quot; egress qos sap-egress policy-name &quot;BNG_Subscriber_HSI&quot;
+/configure subscriber-mgmt sla-profile &quot;UpTo1Gbps&quot; egress qos sap-egress overrides queue 1 rate pir 980000
+/configure subscriber-mgmt sla-profile &quot;UpTo1Gbps&quot; ingress qos sap-ingress policy-name &quot;BNG_Subscriber_HSI&quot;
+/configure subscriber-mgmt sla-profile &quot;UpTo1Gbps&quot; ingress qos sap-ingress overrides queue 1 rate pir 980000
+/configure subscriber-mgmt sla-profile &quot;sla-prof-internet&quot; { }
+/configure subscriber-mgmt sla-profile &quot;sla-prof-video&quot; { }
+/configure subscriber-mgmt sla-profile &quot;sla-prof-voice&quot; { }
+</div></code></pre>
+<p>MSAP policy</p>
+<pre class="hljs"><code><div>/configure subscriber-mgmt msap-policy &quot;msap-policy-1&quot; sub-sla-mgmt subscriber-limit 1000
+/configure subscriber-mgmt msap-policy &quot;msap-policy-1&quot; sub-sla-mgmt sub-ident-policy &quot;sub-id-default&quot;
+/configure subscriber-mgmt msap-policy &quot;msap-policy-1&quot; sub-sla-mgmt defaults sla-profile &quot;sla-prof-default&quot;
+/configure subscriber-mgmt msap-policy &quot;msap-policy-1&quot; sub-sla-mgmt defaults sub-profile &quot;sub-prof-default&quot;
+/configure subscriber-mgmt msap-policy &quot;msap-policy-1&quot; sub-sla-mgmt single-sub-parameters profiled-traffic-only true
+</div></code></pre>
+<p>Capture SAP</p>
+<pre class="hljs"><code><div>/configure service vpls &quot;autovlan&quot; admin-state enable
+/configure service vpls &quot;autovlan&quot; service-id 2001
+/configure service vpls &quot;autovlan&quot; customer &quot;1&quot;
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* admin-state enable
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* radius-auth-policy &quot;radius-policy&quot;
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* trigger-packet dhcp true
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* trigger-packet dhcp6 true
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* msap-defaults policy &quot;msap-policy-1&quot;
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* msap-defaults service-name &quot;residential&quot;
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* ipoe-session admin-state enable
+/configure service vpls &quot;autovlan&quot; capture-sap lag-100:2000.* ipoe-session ipoe-session-policy &quot;IPOE-POLICY&quot;
+</div></code></pre>
+<p>Output results for queue consumption</p>
+<pre class="hljs"><code><div>A:admin@bng1# /show service active-subscribers hierarchy
+
+===============================================================================
+Active Subscribers Hierarchy
+===============================================================================
+-- ONT_123456
+   (sub-prof-default)
+   |
+   |-- sap:[lag-100:2000.2011] - sla:1024kbps-down
+   |   |
+   |   +-- IPOE-session - mac:02:42:ac:11:01:01 - svc:3000
+   |       |
+   |       +-- 172.16.10.10 - DHCP
+   |
+   |-- sap:[lag-100:2000.2012] - sla:1024kbps-down
+   |   |
+   |   +-- IPOE-session - mac:02:42:ac:11:01:02 - svc:3000
+   |       |
+   |       +-- 172.16.20.20 - DHCP
+   |
+   +-- sap:[lag-100:2000.2013] - sla:1024kbps-down
+       |
+       +-- IPOE-session - mac:02:42:ac:11:01:03 - svc:3000
+           |
+           +-- 172.16.30.30 - DHCP
+
+-- ONT_654321
+   (sub-prof-default)
+   |
+   +-- sap:[lag-100:2000.2021] - sla:1024kbps-down
+       |
+       +-- IPOE-session - mac:02:42:ac:11:02:01 - svc:3000
+           |
+           +-- 172.16.10.11 - DHCP
+
+-------------------------------------------------------------------------------
+Number of active subscribers : 2
+Flags: (N) = the host or the managed route is in non-forwarding state
+===============================================================================
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show service id * subscriber-hosts | match 'Number of subscriber hosts'
+Number of subscriber hosts : 4
+Number of subscriber hosts : 4
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show service sap-using | match &quot;Number of SAPs&quot;
+Number of SAPs : 11
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /tools dump resource-usage system all | match 'Resource Usage Infor'
+Resource Usage Information for System
+Resource Usage Information for Card Slot #1
+Resource Usage Information for Card Slot #1 FP #1
+Resource Usage Information for Card Slot #1 FP #2
+Resource Usage Information for Card Slot #1 MDA #1
+Resource Usage Information for Card Slot #2
+Resource Usage Information for Card Slot #2 FP #1
+Resource Usage Information for Card Slot #2 FP #2
+Resource Usage Information for Card Slot #2 MDA #1
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /tools dump resource-usage card all | match 'SAP Instances \+ ' ### per card
+                            SAP Instances +      196607          11      196596
+                            SAP Instances +      196607           0      196607
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /tools dump resource-usage card all | match 'Egress Queues|Ingress Queues|Ingress Policers|Egress Policers' ### per complex
+                              Ingress Queues |     131072        957     130115
+                               Egress Queues |     131072         61     131011
+                            Ingress Policers |     393215          5     393210
+                             Egress Policers |     393215          1     393214
+                              Ingress Queues |     131072        755     130317
+                               Egress Queues |     131072         31     131041
+                            Ingress Policers |     393215          1     393214
+                             Egress Policers |     393215          1     393214
+                              Ingress Queues |     131072        859     130213
+                               Egress Queues |     131072         31     131041
+                            Ingress Policers |     393215          1     393214
+                             Egress Policers |     393215          1     393214
+                              Ingress Queues |     131072        755     130317
+                               Egress Queues |     131072         31     131041
+                            Ingress Policers |     393215          1     393214
+                             Egress Policers |     393215          1     393214
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show pools &quot;1/1/c2/1&quot; access-ingress | match 'Queue : '
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show pools &quot;1/1/c3/1&quot; access-ingress | match 'Queue : '
+Queue : 3000-&gt;lag-100:2000.4092(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.4093(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.4094(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.2011(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.2013(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.2021(1/1/c3/1)-&gt;1
+Queue : 3000-&gt;lag-100:2000.2012(1/1/c3/1)-&gt;1     
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show pools &quot;1/1/c7/1&quot; access-ingress | match 'Queue : '
+Queue : 3000-&gt;1/1/c7/1:3001-&gt;1
+Queue : 3000-&gt;1/1/c7/1:3002-&gt;1
+Queue : 3000-&gt;1/1/c7/1:3003-&gt;1
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show service active-subscribers subscriber * detail  ### for queue/policer being used per sub
+
+===============================================================================
+Active Subscribers
+===============================================================================
+-------------------------------------------------------------------------------
+Subscriber ONT_123456
+           (sub-prof-default)
+-------------------------------------------------------------------------------
+I. Sched. Policy : N/A                              
+E. Sched. Policy : N/A                              E. Agg Rate Limit: Max
+Adaptation-rule  : closest                          E. Min Resv Bw   : 1
+Burst-limit      : default                          
+I. Policer Ctrl. : root                             
+E. Policer Ctrl. : N/A                              
+I. vport-hashing : Disabled                         
+I. sec-sh-hashing: Disabled                         
+Q Frame-Based Ac*: Disabled                         
+Acct. Policy     : N/A                              Collect Stats    : Disabled
+ANCP Pol.        : N/A                              
+Accu-stats-pol   : (Not Specified)                  
+HostTrk Pol.     : N/A                              
+IGMP Policy      : N/A                              
+MLD Policy       : N/A                              
+PIM Policy       : N/A                              
+Sub. MCAC Policy : N/A                              
+NAT Policy       : N/A
+Firewall Policy  : N/A                              
+UPnP Policy      : N/A                              
+NAT Prefix List  : N/A                              
+Allow NAT bypass : No                               
+NAT access mode  : auto                             
+Def. Encap Offset: none                             Encap Offset Mode: none
+Vol stats type   : full                             
+Preference       : 5                                
+LAG hash class   : 1                                
+LAG hash weight  : 1                                
+Sub. ANCP-String : &quot;ONT_123456&quot;
+Sub. Int Dest Id : &quot;&quot;
+Igmp Rate Adj    : N/A                              
+RADIUS Rate-Limit: N/A                              
+Oper-Rate-Limit  : Maximum                          
+QoS-model        : fp                               
+-------------------------------------------------------------------------------
+Radius Accounting
+-------------------------------------------------------------------------------
+Policy           : N/A                              
+Session Opti.Stop: False                            
+Oversubscribed   : False                            
+* indicates that the corresponding row element may have been truncated.
+-------------------------------------------------------------------------------
+(1) SLA Profile Instance
+    - sap:[lag-100:2000.2011] (VPRN 3000 - toOLT1-Internet)
+    - sla:1024kbps-down
+-------------------------------------------------------------------------------
+Description          : 1 Mbps SLA-Profile for BNG HSI subscribers
+Control plane(s)     : local                  
+Alternate-profile    : (Not Specified)
+Host Limits          : No Limit
+Session Limits       : No Limit
+Egr Sched-Policy     : N/A                    
+Ingress Qos-Policy   : 213                    Egress Qos-Policy : 21
+Ingress Queuing Type : Service-queuing (Not Applicable to Policer)
+Ingr IP Fltr-Id      : N/A                    Egr IP Fltr-Id    : N/A
+Ingr IPv6 Fltr-Id    : N/A                    Egr IPv6 Fltr-Id  : N/A
+Ingress Report-Rate  : Maximum                
+Egress Report-Rate   : Maximum                
+Egress Remarking     : from Sap Qos           
+Credit Control Pol.  : N/A
+Category Map         : (Not Specified)        
+Use ing L2TP DSCP    : false                  
+Default SPI sharing  : per-sap                
+Bonding Rate-thresh. : high 90 low 80         
+Bonding Weight       : weight 100 5           
+Hs-Oper-Rate-Limit   : Maximum                
+Egr hqos mgmt status : disabled               
+Ing hqos mgmt status : disabled               
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+IP Address                                                                  
+              MAC Address        Session            Origin       Svc        Fwd
+-------------------------------------------------------------------------------
+172.16.10.10
+              02:42:ac:11:01:01  IPoE               DHCP         3000       Y
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+SLA Profile Instance statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Off. HiPrio           : 0                       0                        
+Off. LowPrio          : 0                       0                        
+Off. Uncolor          : 0                       0                        
+Off. Managed          : 0                       0                        
+
+Queueing Stats (Ingress QoS Policy 213)
+Dro. HiPrio           : 0                       0                        
+Dro. LowPrio          : 0                       0                        
+For. InProf           : 0                       0                        
+For. OutProf          : 0                       0                        
+
+Queueing Stats (Egress QoS Policy 21)
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Queue statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Egress Queue 1 
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Policer statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Ingress Policer 62 (Stats mode: minimal)
+Off. All              : 0                       0                        
+Dro. All              : 0                       0                        
+For. All              : 0                       0                        
+
+
+-------------------------------------------------------------------------------
+(2) SLA Profile Instance
+    - sap:[lag-100:2000.2012] (VPRN 3000 - toOLT1-Voice)
+    - sla:1024kbps-down
+-------------------------------------------------------------------------------
+Description          : 1 Mbps SLA-Profile for BNG HSI subscribers
+Control plane(s)     : local                  
+Alternate-profile    : (Not Specified)
+Host Limits          : No Limit
+Session Limits       : No Limit
+Egr Sched-Policy     : N/A                    
+Ingress Qos-Policy   : 213                    Egress Qos-Policy : 21
+Ingress Queuing Type : Service-queuing (Not Applicable to Policer)
+Ingr IP Fltr-Id      : N/A                    Egr IP Fltr-Id    : N/A
+Ingr IPv6 Fltr-Id    : N/A                    Egr IPv6 Fltr-Id  : N/A
+Ingress Report-Rate  : Maximum                
+Egress Report-Rate   : Maximum                
+Egress Remarking     : from Sap Qos           
+Credit Control Pol.  : N/A
+Category Map         : (Not Specified)        
+Use ing L2TP DSCP    : false                  
+Default SPI sharing  : per-sap                
+Bonding Rate-thresh. : high 90 low 80         
+Bonding Weight       : weight 100 5           
+Hs-Oper-Rate-Limit   : Maximum                
+Egr hqos mgmt status : disabled               
+Ing hqos mgmt status : disabled               
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+IP Address                                                                  
+              MAC Address        Session            Origin       Svc        Fwd
+-------------------------------------------------------------------------------
+172.16.20.20
+              02:42:ac:11:01:02  IPoE               DHCP         3000       Y
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+SLA Profile Instance statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Off. HiPrio           : 0                       0                        
+Off. LowPrio          : 0                       0                        
+Off. Uncolor          : 0                       0                        
+Off. Managed          : 0                       0                        
+
+Queueing Stats (Ingress QoS Policy 213)
+Dro. HiPrio           : 0                       0                        
+Dro. LowPrio          : 0                       0                        
+For. InProf           : 0                       0                        
+For. OutProf          : 0                       0                        
+
+Queueing Stats (Egress QoS Policy 21)
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Queue statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Egress Queue 1 
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Policer statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Ingress Policer 62 (Stats mode: minimal)
+Off. All              : 0                       0                        
+Dro. All              : 0                       0                        
+For. All              : 0                       0                        
+
+
+-------------------------------------------------------------------------------
+(3) SLA Profile Instance
+    - sap:[lag-100:2000.2013] (VPRN 3000 - toOLT1-Video)
+    - sla:1024kbps-down
+-------------------------------------------------------------------------------
+Description          : 1 Mbps SLA-Profile for BNG HSI subscribers
+Control plane(s)     : local                  
+Alternate-profile    : (Not Specified)
+Host Limits          : No Limit
+Session Limits       : No Limit
+Egr Sched-Policy     : N/A                    
+Ingress Qos-Policy   : 213                    Egress Qos-Policy : 21
+Ingress Queuing Type : Service-queuing (Not Applicable to Policer)
+Ingr IP Fltr-Id      : N/A                    Egr IP Fltr-Id    : N/A
+Ingr IPv6 Fltr-Id    : N/A                    Egr IPv6 Fltr-Id  : N/A
+Ingress Report-Rate  : Maximum                
+Egress Report-Rate   : Maximum                
+Egress Remarking     : from Sap Qos           
+Credit Control Pol.  : N/A
+Category Map         : (Not Specified)        
+Use ing L2TP DSCP    : false                  
+Default SPI sharing  : per-sap                
+Bonding Rate-thresh. : high 90 low 80         
+Bonding Weight       : weight 100 5           
+Hs-Oper-Rate-Limit   : Maximum                
+Egr hqos mgmt status : disabled               
+Ing hqos mgmt status : disabled               
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+IP Address                                                                  
+              MAC Address        Session            Origin       Svc        Fwd
+-------------------------------------------------------------------------------
+172.16.30.30
+              02:42:ac:11:01:03  IPoE               DHCP         3000       Y
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+SLA Profile Instance statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Off. HiPrio           : 0                       0                        
+Off. LowPrio          : 0                       0                        
+Off. Uncolor          : 0                       0                        
+Off. Managed          : 0                       0                        
+
+Queueing Stats (Ingress QoS Policy 213)
+Dro. HiPrio           : 0                       0                        
+Dro. LowPrio          : 0                       0                        
+For. InProf           : 0                       0                        
+For. OutProf          : 0                       0                        
+
+Queueing Stats (Egress QoS Policy 21)
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Queue statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Egress Queue 1 
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Policer statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Ingress Policer 62 (Stats mode: minimal)
+Off. All              : 0                       0                        
+Dro. All              : 0                       0                        
+For. All              : 0                       0                        
+
+
+===============================================================================
+
+===============================================================================
+Active Subscribers
+===============================================================================
+-------------------------------------------------------------------------------
+Subscriber ONT_654321
+           (sub-prof-default)
+-------------------------------------------------------------------------------
+I. Sched. Policy : N/A                              
+E. Sched. Policy : N/A                              E. Agg Rate Limit: Max
+Adaptation-rule  : closest                          E. Min Resv Bw   : 1
+Burst-limit      : default                          
+I. Policer Ctrl. : root                             
+E. Policer Ctrl. : N/A                              
+I. vport-hashing : Disabled                         
+I. sec-sh-hashing: Disabled                         
+Q Frame-Based Ac*: Disabled                         
+Acct. Policy     : N/A                              Collect Stats    : Disabled
+ANCP Pol.        : N/A                              
+Accu-stats-pol   : (Not Specified)                  
+HostTrk Pol.     : N/A                              
+IGMP Policy      : N/A                              
+MLD Policy       : N/A                              
+PIM Policy       : N/A                              
+Sub. MCAC Policy : N/A                              
+NAT Policy       : N/A
+Firewall Policy  : N/A                              
+UPnP Policy      : N/A                              
+NAT Prefix List  : N/A                              
+Allow NAT bypass : No                               
+NAT access mode  : auto                             
+Def. Encap Offset: none                             Encap Offset Mode: none
+Vol stats type   : full                             
+Preference       : 5                                
+LAG hash class   : 1                                
+LAG hash weight  : 1                                
+Sub. ANCP-String : &quot;ONT_654321&quot;
+Sub. Int Dest Id : &quot;&quot;
+Igmp Rate Adj    : N/A                              
+RADIUS Rate-Limit: N/A                              
+Oper-Rate-Limit  : Maximum                          
+QoS-model        : fp                               
+-------------------------------------------------------------------------------
+Radius Accounting
+-------------------------------------------------------------------------------
+Policy           : N/A                              
+Session Opti.Stop: False                            
+Oversubscribed   : False                            
+* indicates that the corresponding row element may have been truncated.
+-------------------------------------------------------------------------------
+(1) SLA Profile Instance
+    - sap:[lag-100:2000.2021] (VPRN 3000 - toOLT1-Internet)
+    - sla:1024kbps-down
+-------------------------------------------------------------------------------
+Description          : 1 Mbps SLA-Profile for BNG HSI subscribers
+Control plane(s)     : local                  
+Alternate-profile    : (Not Specified)
+Host Limits          : No Limit
+Session Limits       : No Limit
+Egr Sched-Policy     : N/A                    
+Ingress Qos-Policy   : 213                    Egress Qos-Policy : 21
+Ingress Queuing Type : Service-queuing (Not Applicable to Policer)
+Ingr IP Fltr-Id      : N/A                    Egr IP Fltr-Id    : N/A
+Ingr IPv6 Fltr-Id    : N/A                    Egr IPv6 Fltr-Id  : N/A
+Ingress Report-Rate  : Maximum                
+Egress Report-Rate   : Maximum                
+Egress Remarking     : from Sap Qos           
+Credit Control Pol.  : N/A
+Category Map         : (Not Specified)        
+Use ing L2TP DSCP    : false                  
+Default SPI sharing  : per-sap                
+Bonding Rate-thresh. : high 90 low 80         
+Bonding Weight       : weight 100 5           
+Hs-Oper-Rate-Limit   : Maximum                
+Egr hqos mgmt status : disabled               
+Ing hqos mgmt status : disabled               
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+IP Address                                                                  
+              MAC Address        Session            Origin       Svc        Fwd
+-------------------------------------------------------------------------------
+172.16.10.11
+              02:42:ac:11:02:01  IPoE               DHCP         3000       Y
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+SLA Profile Instance statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Off. HiPrio           : 0                       0                        
+Off. LowPrio          : 0                       0                        
+Off. Uncolor          : 0                       0                        
+Off. Managed          : 0                       0                        
+
+Queueing Stats (Ingress QoS Policy 213)
+Dro. HiPrio           : 0                       0                        
+Dro. LowPrio          : 0                       0                        
+For. InProf           : 0                       0                        
+For. OutProf          : 0                       0                        
+
+Queueing Stats (Egress QoS Policy 21)
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Queue statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Egress Queue 1 
+Dro. In/InplusProf    : 0                       0                        
+Dro. Out/ExcProf      : 0                       0                        
+For. In/InplusProf    : 0                       0                        
+For. Out/ExcProf      : 0                       0                        
+
+-------------------------------------------------------------------------------
+SLA Profile Instance per Policer statistics
+-------------------------------------------------------------------------------
+                        Packets                 Octets
+
+Ingress Policer 62 (Stats mode: minimal)
+Off. All              : 0                       0                        
+Dro. All              : 0                       0                        
+For. All              : 0                       0                        
+
+
+===============================================================================
+</div></code></pre>
+<pre class="hljs"><code><div>A:admin@bng1# /show qos policer subscriber *
+
+===============================================================================
+Policer Information (Summary), Slot 1
+===============================================================================
+-------------------------------------------------------------------------------
+Name                FC-Maps       MBS       HP-Only A.PIR    A.CIR
+Direction                         CBS       Depth   O.PIR    O.CIR    O.FIR
+-------------------------------------------------------------------------------
+Sub=ONT_123456:1024kbps-down 3000-&gt;lag-100:2000.2011(1/1/c3/1)-&gt;62
+Ingress             be l2 af l1   124 KB    16 KB   100000   0         
+                    h2 ef h1 nc   0 KB      0       100000   0        100000
+Sub=ONT_123456:1024kbps-down 3000-&gt;lag-100:2000.2013(1/1/c3/1)-&gt;62
+Ingress             be l2 af l1   124 KB    16 KB   100000   0         
+                    h2 ef h1 nc   0 KB      0       100000   0        100000
+Sub=ONT_123456:1024kbps-down 3000-&gt;lag-100:2000.2012(1/1/c3/1)-&gt;62
+Ingress             be l2 af l1   124 KB    16 KB   100000   0         
+                    h2 ef h1 nc   0 KB      0       100000   0        100000
+===============================================================================
+
+===============================================================================
+Policer Information (Summary), Slot 1
+===============================================================================
+-------------------------------------------------------------------------------
+Name                FC-Maps       MBS       HP-Only A.PIR    A.CIR
+Direction                         CBS       Depth   O.PIR    O.CIR    O.FIR
+-------------------------------------------------------------------------------
+Sub=ONT_654321:1024kbps-down 3000-&gt;lag-100:2000.2021(1/1/c3/1)-&gt;62
+Ingress             be l2 af l1   124 KB    16 KB   100000   0         
+                    h2 ef h1 nc   0 KB      0       100000   0        100000
+===============================================================================
+</div></code></pre>
+
+</body>
+</html>

@@ -16,5 +16,7 @@
 /show pools slot-number 1 fp 2 network-ingress | match 'Queue : ' | count
 /show pools slot-number 2 fp 1 network-ingress | match 'Queue : ' | count
 /show pools slot-number 2 fp 2 network-ingress | match 'Queue : ' | count
+/show service active-subscribers subscriber * detail  ### for queue/policer being used per sub
+/show qos policer subscriber *
 /environment more true
 

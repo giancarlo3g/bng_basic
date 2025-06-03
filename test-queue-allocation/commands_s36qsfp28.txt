@@ -20,3 +20,30 @@
 /show qos policer subscriber *
 /environment more true
 
+
+
+
+
+/clear screen
+/environment more false
+#/show card detail
+#/show mda detail
+/show lag port 
+/show service active-subscribers hierarchy
+/show service id * subscriber-hosts | match 'Number of subscriber hosts'
+/show service sap-using | match "Number of SAPs"
+/tools dump resource-usage system all | match 'Resource Usage Infor'
+/tools dump resource-usage card all | match 'SAP Instances \+ ' ### per card
+/tools dump resource-usage card all | match 'Egress Queues|Ingress Queues|Ingress Policers|Egress Policers|Slot' ### per complex
+/show pools "1/1/c2/1" access-ingress | match 'Queue : ' 
+/show pools "1/1/c3/1" access-ingress | match 'Queue : ' 
+/show pools "1/1/c7/1" access-ingress | match 'Queue : ' 
+/show pools slot-number 1 fp 1 network-ingress | match 'Queue : ' | count
+/show pools slot-number 1 fp 2 network-ingress | match 'Queue : ' | count
+/show pools slot-number 2 fp 1 network-ingress | match 'Queue : ' | count
+/show pools slot-number 2 fp 2 network-ingress | match 'Queue : ' | count
+#/show service active-subscribers subscriber * detail  ### for queue/policer being used per sub
+/show qos policer subscriber *
+/environment more true
+
+

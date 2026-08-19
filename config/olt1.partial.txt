@@ -1,0 +1,184 @@
+configure {
+    apply-groups ["LLDP-DEFAULT"]
+    groups {
+        group "LLDP-DEFAULT" {
+            port "<^[0-9][^m]*$>" {
+                ethernet {
+                    lldp {
+                        dest-mac nearest-bridge {
+                            receive true
+                            transmit true
+                            tx-tlvs {
+                                port-desc true
+                                sys-name true
+                                sys-desc true
+                                sys-cap true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    card 1 {
+        card-type iom-1
+        mda 1 {
+            mda-type me12-100gb-qsfp28
+        }
+    }
+    log {
+        filter "1001" {
+            named-entry "10" {
+                description "Collect only events of major severity or higher"
+                action forward
+                match {
+                    severity {
+                        gte major
+                    }
+                }
+            }
+        }
+        log-id "99" {
+            description "Default System Log"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+        log-id "100" {
+            description "Default Serious Errors Log"
+            filter "1001"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+    }
+    port 1/1/c1 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c1/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type qinq
+        }
+    }
+    port 1/1/c2 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c2/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    port 1/1/c3 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c3/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    service {
+        vpls "internet_2011" {
+            admin-state enable
+            service-id 2011
+            customer "1"
+            sap 1/1/c1/1:2000.2011 {
+            }
+            sap 1/1/c2/1:2011 {
+                dhcp {
+                    admin-state enable
+                    snoop true
+                    option-82 {
+                        action replace
+                        remote-id {
+                            ascii-string "ONT_123456"
+                        }
+                    }
+                }
+            }
+        }
+        vpls "internet_2021" {
+            admin-state enable
+            service-id 2021
+            customer "1"
+            sap 1/1/c1/1:2000.2021 {
+            }
+            sap 1/1/c3/1:2021 {
+                dhcp {
+                    admin-state enable
+                    snoop true
+                    option-82 {
+                        action replace
+                        remote-id {
+                            ascii-string "ONT_654321"
+                        }
+                    }
+                }
+            }
+        }
+        vpls "video_2013" {
+            admin-state enable
+            service-id 2013
+            customer "1"
+            sap 1/1/c1/1:2000.2013 {
+            }
+            sap 1/1/c2/1:2013 {
+                dhcp {
+                    admin-state enable
+                    snoop true
+                    option-82 {
+                        action replace
+                        remote-id {
+                            ascii-string "ONT_123456"
+                        }
+                    }
+                }
+            }
+        }
+        vpls "voice_2012" {
+            admin-state enable
+            service-id 2012
+            customer "1"
+            sap 1/1/c1/1:2000.2012 {
+            }
+            sap 1/1/c2/1:2012 {
+                dhcp {
+                    admin-state enable
+                    snoop true
+                    option-82 {
+                        action replace
+                        remote-id {
+                            ascii-string "ONT_123456"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

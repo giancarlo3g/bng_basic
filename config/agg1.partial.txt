@@ -1,0 +1,206 @@
+configure {
+    apply-groups ["LLDP-DEFAULT"]
+    groups {
+        group "LLDP-DEFAULT" {
+            port "<^[0-9][^m]*$>" {
+                ethernet {
+                    lldp {
+                        dest-mac nearest-bridge {
+                            receive true
+                            transmit true
+                            tx-tlvs {
+                                port-desc true
+                                sys-name true
+                                sys-desc true
+                                sys-cap true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    log {
+        filter "1001" {
+            named-entry "10" {
+                description "Collect only events of major severity or higher"
+                action forward
+                match {
+                    severity {
+                        gte major
+                    }
+                }
+            }
+        }
+        log-id "99" {
+            description "Default System Log"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+        log-id "100" {
+            description "Default Serious Errors Log"
+            filter "1001"
+            source {
+                main true
+            }
+            destination {
+                memory {
+                    max-entries 500
+                }
+            }
+        }
+    }
+    port 1/1/c1 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c1/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    port 1/1/c2 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c2/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    port 1/1/c3 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c3/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    port 1/1/c4 {
+        admin-state enable
+        connector {
+            breakout c1-100g
+        }
+    }
+    port 1/1/c4/1 {
+        admin-state enable
+        ethernet {
+            mode access
+            encap-type dot1q
+            mtu 1522
+        }
+    }
+    port 1/1/c5 {
+    }
+    port 1/1/c6 {
+    }
+    port 1/1/c7 {
+    }
+    port 1/1/c8 {
+    }
+    port 1/1/c9 {
+    }
+    port 1/1/c10 {
+    }
+    port 1/1/c11 {
+    }
+    port 1/1/c12 {
+    }
+    port 1/1/c13 {
+    }
+    port 1/1/c14 {
+    }
+    port 1/1/c15 {
+    }
+    port 1/1/c16 {
+    }
+    port 1/1/c17 {
+    }
+    port 1/1/c18 {
+    }
+    port 1/1/c19 {
+    }
+    port 1/1/c20 {
+    }
+    port 1/1/c21 {
+    }
+    port 1/1/c22 {
+    }
+    port 1/1/c23 {
+    }
+    port 1/1/c24 {
+    }
+    port 1/1/c25 {
+    }
+    port 1/1/c26 {
+    }
+    port 1/1/c27 {
+    }
+    port 1/1/c28 {
+    }
+    port 1/1/c29 {
+    }
+    port 1/1/c30 {
+    }
+    port 1/1/c31 {
+    }
+    port 1/1/c32 {
+    }
+    port 1/1/c33 {
+    }
+    port 1/1/c34 {
+    }
+    port 1/1/c35 {
+    }
+    port 1/1/c36 {
+    }
+    router "Base" {
+        mpls-labels {
+            sr-labels {
+                start 100000
+                end 101000
+            }
+            reserved-label-block "evpn-bum-label" {
+                start-label 101001
+                end-label 102000
+            }
+        }
+    }
+    service {
+        vpls "residential" {
+            admin-state enable
+            service-id 2000
+            customer "1"
+            sap 1/1/c1/1:* {
+            }
+            sap 1/1/c2/1:* {
+            }
+            sap 1/1/c3/1:* {
+            }
+            sap 1/1/c4/1:* {
+            }
+        }
+    }
+}

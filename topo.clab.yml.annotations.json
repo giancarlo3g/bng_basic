@@ -1,0 +1,126 @@
+{
+  "freeTextAnnotations": [],
+  "freeShapeAnnotations": [],
+  "trafficRateAnnotations": [],
+  "groupStyleAnnotations": [],
+  "networkNodeAnnotations": [],
+  "nodeAnnotations": [
+    {
+      "id": "bng1",
+      "interfacePattern": "1/1/{n}",
+      "position": {
+        "x": 120,
+        "y": 240
+      }
+    },
+    {
+      "id": "bng2",
+      "interfacePattern": "1/1/{n}",
+      "position": {
+        "x": 120,
+        "y": 380
+      }
+    },
+    {
+      "id": "agg1",
+      "interfacePattern": "1/1/c{n}/1",
+      "position": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "olt1",
+      "interfacePattern": "1/1/c{n}/1",
+      "position": {
+        "x": 460,
+        "y": 300
+      }
+    },
+    {
+      "id": "ont1",
+      "interfacePattern": "e1-{n}",
+      "position": {
+        "x": 580,
+        "y": 360
+      }
+    },
+    {
+      "id": "ont2",
+      "interfacePattern": "e1-{n}",
+      "position": {
+        "x": 580,
+        "y": 240
+      }
+    },
+    {
+      "id": "switch",
+      "interfacePattern": "e1-{n}",
+      "position": {
+        "x": 0,
+        "y": 320
+      }
+    },
+    {
+      "id": "host1-internet",
+      "position": {
+        "x": 720,
+        "y": 540
+      }
+    },
+    {
+      "id": "host1-voice",
+      "position": {
+        "x": 740,
+        "y": 340
+      }
+    },
+    {
+      "id": "host1-video",
+      "position": {
+        "x": 740,
+        "y": 440
+      }
+    },
+    {
+      "id": "host2-internet",
+      "position": {
+        "x": 820,
+        "y": 240
+      }
+    },
+    {
+      "id": "radius",
+      "position": {
+        "x": -140,
+        "y": 320
+      }
+    },
+    {
+      "id": "dhcp",
+      "position": {
+        "x": -140,
+        "y": 240
+      }
+    },
+    {
+      "id": "internet",
+      "position": {
+        "x": -120,
+        "y": 420
+      }
+    },
+    {
+      "id": "test",
+      "position": {
+        "x": 535.1807228915663,
+        "y": 385.54216867469876
+      },
+      "icon": "router",
+      "interfacePattern": "e1-{n}"
+    }
+  ],
+  "edgeAnnotations": [],
+  "aliasEndpointAnnotations": [],
+  "viewerSettings": {}
+}

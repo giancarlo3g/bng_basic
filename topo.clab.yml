@@ -1,66 +1,96 @@
 name: bng
-prefix: ""
+prefix: __lab-name
 
 topology:
   defaults:
     kind: nokia_sros
   kinds:
     nokia_srlinux:
-      image: ghcr.io/nokia/srlinux:24.10.1
+      image: ghcr.io/nokia/srlinux:26.7.1
       # license is required to run IXR-DNX and 7730 on Containerlab
-      license: ../license-srl24.10.txt
-    nokia_sros:
-      image: registry.srlinux.dev/pub/nokia_sros:24.10.R1 
-      license: ../license-sros24.txt
+      license: ../license-srl26.7.txt
+    nokia_srsim:
+      image: nokia_srsim:25.10.R2
+      license: ../license-srsim25.txt
     linux:
       image: ghcr.io/mfzhsn/network-multitool-sshd:0.0.2
-  nodes: 
-    bng1: # SR-2s
-      kind: nokia_sros
-      type: >-
-        cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
-        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28 ___ 
-        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28
-      startup-config: ./config/bng1.cfg
-      ports:
-        - 50101:22
-    bng2: # SR-2s
-      kind: nokia_sros
-      type: >-
-        cp: cpu=2 ram=3 slot=A chassis=SR-2s card=cpm-2s sfm=sfm-2s ___ 
-        lc: cpu=2 ram=4 slot=1 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28 ___ 
-        lc: cpu=2 ram=4 slot=2 chassis=SR-2s sfm=sfm-s card=xcm-2s mda/1=s36-100gb-qsfp28
-      startup-config: ./config/bng2.cfg
-      ports:
-        - 50201:22
-    agg1: # IXR-X1
-      kind: nokia_sros
-      type: >-
-          cp: cpu=2 ram=3 slot=A chassis=IXR-X card=imm32-qsfp28+4-qsfpdd ___ 
-          lc: cpu=2 ram=4 max_nics=36 slot=1 chassis=IXR-X card=imm32-qsfp28+4-qsfpdd mda/1=m32-qsfp28+4-qsfpdd
-      startup-config: ./config/agg1.cfg
-      ports:
-        - 50301:22
-        - 50302:57400
-        - 50303:830
-    olt1: # SR-1
-      kind: nokia_sros
+  nodes:
+    bng1:
+      # SR-2s
+      kind: nokia_srsim
+      type: sr-2s
+      components:
+        - slot: A
+          type: cpm-2s
+          sfm: sfm-2s
+        - slot: 1
+          type: xcm-2s
+          sfm: sfm-2s
+          mda:
+            - slot: 1
+              type: s36-100gb-qsfp28
+        - slot: 2
+          type: xcm-2s
+          sfm: sfm-2s
+          mda:
+            - slot: 1
+              type: s36-100gb-qsfp28
+      startup-config: ./config/bng1.partial.txt
+    bng2:
+      # SR-2s
+      kind: nokia_srsim
+      type: sr-2s
+      components:
+        - slot: A
+          type: cpm-2s
+          sfm: sfm-2s
+        - slot: 1
+          type: xcm-2s
+          sfm: sfm-2s
+          mda:
+            - slot: 1
+              type: s36-100gb-qsfp28
+        - slot: 2
+          type: xcm-2s
+          sfm: sfm-2s
+          mda:
+            - slot: 1
+              type: s36-100gb-qsfp28
+      startup-config: ./config/bng2.partial.txt
+    agg1:
+      # IXR-X1
+      kind: nokia_srsim
+      type: ixr-x
+      env:
+        CLAB_SROS_DISABLE_COMPONENT_CONFIG: "xyz"
+      components:
+        - slot: A
+          type: cpm-ixr-x/imm32-qsfp28+4-qsfpdd
+        - slot: 1
+          type: cpm-ixr-x/imm32-qsfp28+4-qsfpdd
+          mda:
+            - slot: 1
+              type: m32-qsfp28+4-qsfpdd
+      startup-config: ./config/agg1.partial.txt
+    olt1:
+      # SR-1
+      kind: nokia_srsim
       type: sr-1
-      startup-config: ./config/olt1.cfg
-      ports:
-        - 50401:22
-    ont1: # IXR-D2L
+      components:
+        - mda:
+            - slot: 1
+              type: me12-100gb-qsfp28
+      startup-config: ./config/olt1.partial.txt
+    ont1:
+      # IXR-D2L
       kind: nokia_srlinux
-      type: ixrd2l
-      startup-config: ./config/ont1.json
-      ports:
-        - 50501:22
-    ont2: # IXR-D2L
+      type: ixr-d2l
+      startup-config: ./config/ont1.partial.txt
+    ont2:
+      # IXR-D2L
       kind: nokia_srlinux
-      type: ixrd2l
-      startup-config: ./config/ont2.json
-      ports:
-        - 50601:22
+      type: ixr-d2l
+      startup-config: ./config/ont2.partial.txt
     host1-internet:
       kind: linux
       image: ghcr.io/giancarlo3g/host-alpine:latest
@@ -93,15 +123,14 @@ topology:
         - ifconfig eth1 hw ether 02:42:ac:11:02:01
         - echo "ping to server"
         - ping 100.1.2.2
-    switch: # IXR-D2L
+    switch:
+      # IXR-D2L
       kind: nokia_srlinux
-      type: ixrd2l
-      startup-config: ./config/switch.json
-      ports:
-        - 51801:22
+      type: ixr-d2l
+      startup-config: ./config/switch.partial.txt
     radius:
       kind: linux
-      image: freeradius/freeradius-server:latest-alpine
+      image: freeradius/freeradius-server:3.2.7-alpine
       binds:
         - radius/raddb/clients.conf:/etc/raddb/clients.conf
         - radius/raddb/dictionary:/etc/raddb/dictionary
@@ -113,7 +142,7 @@ topology:
         - ifconfig eth1 netmask 255.255.255.0
     dhcp:
       kind: linux
-      image: docker.cloudsmith.io/isc/docker/kea-dhcp4:2.7.5   # https://gitlab.isc.org/isc-projects/kea-docker   https://kea.readthedocs.io/en/latest/arm/config.html
+      image: docker.cloudsmith.io/isc/docker/kea-dhcp4:2.7.5 # https://gitlab.isc.org/isc-projects/kea-docker   https://kea.readthedocs.io/en/latest/arm/config.html
       binds:
         - dhcp/config:/etc/kea
         - dhcp/leases:/var/lib/kea
@@ -122,30 +151,27 @@ topology:
         - ifconfig eth1 172.16.100.2
         - ifconfig eth1 netmask 255.255.255.0
         - ip route add 172.16.20.0/24 via 172.16.100.1
-      cmd: sh -c "echo 'waiting for 60 seconds' && sleep 60 && kea-dhcp4 -c /etc/kea/kea-dhcp4.conf"
+      cmd: sh -c "echo 'waiting for 120 seconds' && sleep 120 && kea-dhcp4 -c /etc/kea/kea-dhcp4.conf"
     internet:
       kind: linux
-      ports:
-        - 51901:22
       exec:
         - ifconfig eth1 100.1.2.2
         - ifconfig eth1 netmask 255.255.255.0
         - ip route replace default via 100.1.2.1 dev eth1
 
   links:
-    - endpoints: ["bng1:eth2", "bng2:eth2"]
-    - endpoints: ["bng1:eth3", "agg1:eth1"]
-    - endpoints: ["bng2:eth3", "agg1:eth2"]
-    - endpoints: ["agg1:eth3", "olt1:eth1"]
-    - endpoints: ["olt1:eth2", "ont1:e1-1"]
-    - endpoints: ["olt1:eth3", "ont2:e1-1"]
-    - endpoints: ["ont1:e1-3", "host1-internet:eth1"]
-    - endpoints: ["ont1:e1-4", "host1-voice:eth1"]
-    - endpoints: ["ont1:e1-5", "host1-video:eth1"]
-    - endpoints: ["ont2:e1-3", "host2-internet:eth1"]
-    - endpoints: ["bng1:eth7", "switch:e1-1"]
-    - endpoints: ["bng2:eth7", "switch:e1-2"]
-    - endpoints: ["radius:eth1", "switch:e1-3"]
-    - endpoints: ["dhcp:eth1", "switch:e1-4"]
-    - endpoints: ["internet:eth1", "switch:e1-5"]
-    
+    - endpoints: [ "bng1:1/1/c2/1", "bng2:1/1/c2/1" ]
+    - endpoints: [ "bng1:1/1/c3/1", "agg1:1/1/c1/1" ]
+    - endpoints: [ "bng2:1/1/c3/1", "agg1:1/1/c2/1" ]
+    - endpoints: [ "agg1:1/1/c3/1", "olt1:1/1/c1/1" ]
+    - endpoints: [ "olt1:1/1/c2/1", "ont1:e1-1" ]
+    - endpoints: [ "olt1:1/1/c3/1", "ont2:e1-1" ]
+    - endpoints: [ "ont1:e1-3", "host1-internet:eth1" ]
+    - endpoints: [ "ont1:e1-4", "host1-voice:eth1" ]
+    - endpoints: [ "ont1:e1-5", "host1-video:eth1" ]
+    - endpoints: [ "ont2:e1-3", "host2-internet:eth1" ]
+    - endpoints: [ "bng1:1/1/c7/1", "switch:e1-1" ]
+    - endpoints: [ "bng2:1/1/c7/1", "switch:e1-2" ]
+    - endpoints: [ "radius:eth1", "switch:e1-3" ]
+    - endpoints: [ "dhcp:eth1", "switch:e1-4" ]
+    - endpoints: [ "internet:eth1", "switch:e1-5" ]
